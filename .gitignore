@@ -1,0 +1,10 @@
+.ipynb_checkpoints/
+.idea
+__pycache__/
+.DS_Store
+response.json
+input/spotify.json
+output/
+venv/
+output/bigass_billboard.csv
+config/
