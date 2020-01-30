@@ -1,2 +1,2 @@
-from samples.pronunciation_predictions import main
+from samples.associate_genius import main
 main()

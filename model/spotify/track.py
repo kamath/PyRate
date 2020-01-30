@@ -1,5 +1,5 @@
 from neomodel import StructuredNode, StringProperty, IntegerProperty, FloatProperty, BooleanProperty, JSONProperty, \
-    ArrayProperty, RelationshipTo
+    ArrayProperty, RelationshipTo, db
 
 from model.spotify import exists
 from model.spotify.album import Album
@@ -30,7 +30,7 @@ class Track(StructuredNode):
     preview_url = StringProperty()
     track_number = IntegerProperty()
     type = StringProperty()
-    uri = StringProperty()
+    uri = StringProperty(unique_index=True)
 
     # We can worry about analysis at a later point
     analysis = JSONProperty()
@@ -49,6 +49,8 @@ class Track(StructuredNode):
     valence = FloatProperty()
     tempo = FloatProperty()
     analysis_url = StringProperty()
+
+    genius_data = JSONProperty()
 
     @classmethod
     def inst(cls, **kwargs):
@@ -86,3 +88,11 @@ class Track(StructuredNode):
             obj.artists.connect(artist)
 
         return obj
+
+    @classmethod
+    @db.transaction
+    def add_genius(cls, uri, data):
+        track = cls.nodes.get_or_none(uri=uri)
+        if track:
+            track.genius_data = data
+            track.save()

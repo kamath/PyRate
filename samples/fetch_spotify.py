@@ -11,6 +11,7 @@ def main():
 
     from scraper.spotify import Spotify
 
+    from model.spotify import connection_url
     from model.spotify.playlist import Playlist
     from model.spotify.track import Track
 
@@ -31,12 +32,7 @@ def main():
                 t.album.connect(album)
             track_obj.playlists.connect(p)
 
-    neo4j_vars = json.load(open(os.path.join('config', 'neo4j.json'), 'r'))
-    user = neo4j_vars['user']
-    pw = neo4j_vars['pass']
-    dns = neo4j_vars['dns']
-    port = neo4j_vars['bolt_port']
-    config.DATABASE_URL = f"bolt://{user}:{pw}@{dns}:{port}"
+    config.DATABASE_URL = connection_url()
 
     playlists = Spotify.get_user_playlists()
     user_id = Spotify.get_current_user()['id']
