@@ -1,5 +1,7 @@
 ![Cover](static/cover.png)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/375f62bb721643488b573e463aeeb9b9)](https://www.codacy.com/manual/andykamath/PyRate?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=andykamath/PyRate&amp;utm_campaign=Badge_Grade)
+
 PyRate is a music data collator that aims to create "shuffling channels" to help you navigate your music listening journey. 
 
 #### Milestones Reached
