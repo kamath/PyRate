@@ -3,14 +3,14 @@ from time import time
 import pandas as pd
 from neomodel import config
 
-from model.spotify.track import Track
+from model.graph.spotify.track import Track
 
 
 def main():
     # TODO: change password
     s = time()
     config.DATABASE_URL = "bolt://neo4j:PyRate69@localhost:7687"
-    song: Track = Track.nodes.first_or_none(uri='spotify.json:track:2okfdBLRlJaCR4uMJdvqsY')
+    song: Track = Track.nodes.first_or_none(uri='spotify:track:2okfdBLRlJaCR4uMJdvqsY')
     print('Acousticness', song.acousticness)
     print('Danceability', song.danceability)
     print('Energy', song.energy)

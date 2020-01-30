@@ -1,2 +1,2 @@
-from samples.associate_genius import main
+from samples.associate_billboard_genius import main
 main()

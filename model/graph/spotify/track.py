@@ -1,9 +1,9 @@
 from neomodel import StructuredNode, StringProperty, IntegerProperty, FloatProperty, BooleanProperty, JSONProperty, \
     ArrayProperty, RelationshipTo, db
 
-from model.spotify import exists
-from model.spotify.album import Album
-from model.spotify.artist import Artist
+from model.graph import exists
+from model.graph.spotify.album import Album
+from model.graph.spotify.artist import Artist
 
 from scraper.spotify import Spotify
 
@@ -12,9 +12,11 @@ class Track(StructuredNode):
     '''
     Represents a Track on Spotify
     '''
-    album = RelationshipTo('model.spotify.json.album.Album', 'FROM')
-    artists = RelationshipTo('model.spotify.json.artist.Artist', 'BY')
-    playlists = RelationshipTo('model.spotify.json.playlist.Playlist', 'FEATURED IN')
+    album = RelationshipTo('model.graph.spotify.album.Album', 'FROM')
+    artists = RelationshipTo('model.graph.spotify.artist.Artist', 'BY')
+    playlists = RelationshipTo('model.graph.spotify.playlist.Playlist', 'FEATURED IN')
+    billboard_data = RelationshipTo('model.graph.billboard.Billboard', 'RANKED AS')
+    genius_data = RelationshipTo('model.graph.genius.Genius', 'ON GENIUS AS')
 
     available_markets = ArrayProperty()
     disc_number = IntegerProperty()
@@ -49,8 +51,6 @@ class Track(StructuredNode):
     valence = FloatProperty()
     tempo = FloatProperty()
     analysis_url = StringProperty()
-
-    genius_data = JSONProperty()
 
     @classmethod
     def inst(cls, **kwargs):

@@ -11,9 +11,9 @@ def main():
 
     from scraper.spotify import Spotify
 
-    from model.spotify import connection_url
-    from model.spotify.playlist import Playlist
-    from model.spotify.track import Track
+    from model.graph import connection_url
+    from model.graph.spotify.playlist import Playlist
+    from model.graph.spotify.track import Track
 
     from time import sleep
     from tqdm import tqdm
@@ -36,7 +36,7 @@ def main():
     user_id = Spotify.get_current_user()['id']
 
     # Limit to just my playlists and playlists created by Spotify
-    playlists = [Playlist.inst(**a) for a in playlists if a['owner']['id'] in (user_id, 'spotify.json', 'spotifycharts')]
+    playlists = [Playlist.inst(**a) for a in playlists if a['owner']['id'] in (user_id, 'spotify', 'spotifycharts')]
 
     for i, p in enumerate(playlists):
         print(i, len(playlists))

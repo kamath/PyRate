@@ -1,8 +1,8 @@
 from neomodel import RelationshipTo, RelationshipFrom
 from neomodel import StructuredNode, StringProperty, BooleanProperty, JSONProperty
 
-from model.spotify import exists
-from model.spotify.user import User
+from model.graph import exists
+from model.graph.spotify.user import User
 
 
 class Playlist(StructuredNode):
@@ -10,9 +10,9 @@ class Playlist(StructuredNode):
     Represents a Playlist on Spotify
     '''
 
-    owner = RelationshipTo('model.spotify.json.user.User', 'OWNED BY')
+    owner = RelationshipTo('model.graph.spotify.user.User', 'OWNED BY')
 
-    tracks = RelationshipFrom('model.spotify.json.track.Track', 'FEATURED IN')
+    tracks = RelationshipFrom('model.graph.spotify.track.Track', 'FEATURED IN')
 
     spotify_id = StringProperty(unique_index=True)
     name = StringProperty()

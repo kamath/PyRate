@@ -14,7 +14,7 @@ class Spotify:
         :return: the new data
         '''
 
-        access = json.load(open(os.path.join('config', 'spotify.json.json'), 'r'))
+        access = json.load(open(os.path.join('config', 'spotify.json'), 'r'))
         CLIENT_ID = access['CLIENT_ID']
         CLIENT_SECRET = access['CLIENT_SECRET']
         auth_str = bytes('{}:{}'.format(CLIENT_ID, CLIENT_SECRET), 'utf-8')
@@ -31,7 +31,7 @@ class Spotify:
         data['REFRESH_TOKEN'] = access['REFRESH_TOKEN']
 
         # Saves the new access data
-        open(os.path.join('config', 'spotify.json.json'), 'w').write(json.dumps(data))
+        open(os.path.join('config', 'spotify.json'), 'w').write(json.dumps(data))
         return data
 
     def __init__(self):
@@ -39,7 +39,7 @@ class Spotify:
         Initializes the Spotify class. Every method aims to be a class object that initializes this every time so
         if the access token expires, the constructor automatically updates the access token using the refresh token
         '''
-        access = json.load(open(os.path.join('config', 'spotify.json.json'), 'r'))
+        access = json.load(open(os.path.join('config', 'spotify.json'), 'r'))
         expires = datetime.strptime(access['EXPIRES'], "%Y-%m-%d %H:%M:%S.%f")
         if datetime.now() > expires:
             self.data = self.refresh_token()
@@ -183,3 +183,12 @@ class Spotify:
         :return: the tracks in the album
         '''
         return cls().get_all(f'albums/{cls.track_id(spotify_uri)}/tracks')
+
+    @classmethod
+    def get_track(cls, spotify_uri: str) -> json:
+        '''
+        Gets track info given spotify_uri
+        :param spotify_uri: the Spotify URI of the track
+        :return: the resulting json
+        '''
+        return cls()._ping_spotify(f'tracks/{cls.track_id(spotify_uri)}')

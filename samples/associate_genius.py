@@ -10,9 +10,9 @@ def main():
 
     from scraper.genius import Genius
 
-    from model.spotify import connection_url
-    from model.spotify.track import Track
-    from model.spotify.album import Album
+    from model.graph import connection_url
+    from model.graph.spotify.track import Track
+    from model.graph.spotify.album import Album
 
     config.DATABASE_URL = connection_url()
     print(len(Album.nodes))
@@ -32,11 +32,11 @@ def main():
                     for hit in resp['hits']:
                         song_data = Genius.get_song(hit['result']['id'])['response']['song']
                         print(song_data['media'])
-                        if 'spotify.json' in [a['provider'] for a in song_data['media']]:
+                        if 'spotify' in [a['provider'] for a in song_data['media']]:
                             print('Spotify exists!')
                             for i, a in enumerate(song_data['media']):
                                 print(a)
-                                if a['provider'] == 'spotify.json':
+                                if a['provider'] == 'spotify':
                                     in_db = Track.nodes.get_or_none(uri=song_data['media'][i]['native_uri'])
                                     if in_db:
                                         print('Track exists:', in_db.name)

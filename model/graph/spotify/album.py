@@ -1,13 +1,13 @@
 from neomodel import RelationshipTo, RelationshipFrom
 from neomodel import StructuredNode, StringProperty, IntegerProperty, JSONProperty, ArrayProperty
 
-from model.spotify import exists
+from model.graph import exists
 
 
 class Album(StructuredNode):
-    artists = RelationshipTo('model.spotify.json.artist.Artist', 'BY')
+    artists = RelationshipTo('model.graph.spotify.artist.Artist', 'BY')
 
-    tracks = RelationshipFrom('model.spotify.json.track.Track', 'FROM')
+    tracks = RelationshipFrom('model.graph.spotify.track.Track', 'FROM')
 
     available_markets = ArrayProperty()
     images = JSONProperty()
@@ -35,7 +35,7 @@ class Album(StructuredNode):
 
         obj = cls(**kwargs).save()
 
-        from model.spotify.artist import Artist
+        from model.graph.spotify.artist import Artist
         artists = [Artist.inst(**a) for a in artists]
         for artist in artists:
             obj.artists.connect(artist)

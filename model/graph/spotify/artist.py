@@ -1,7 +1,7 @@
 from neomodel import RelationshipFrom
 from neomodel import StructuredNode, StringProperty, JSONProperty
 
-from model.spotify import exists
+from model.graph import exists
 
 
 class Artist(StructuredNode):
@@ -9,8 +9,8 @@ class Artist(StructuredNode):
     Represents an artist on Spotify as per Spotify API
     '''
 
-    tracks = RelationshipFrom('model.spotify.json.track.Track', 'BY')
-    albums = RelationshipFrom('model.spotify.json.album.Album', 'BY')
+    tracks = RelationshipFrom('model.graph.spotify.track.Track', 'BY')
+    albums = RelationshipFrom('model.graph.spotify.album.Album', 'BY')
 
     external_urls = JSONProperty()
     href = StringProperty()
