@@ -3,6 +3,7 @@ def main():
     from tqdm import tqdm
     import pandas as pd
     import json
+    from ast import literal_eval
 
     # Assumes all billboard data is in the output/ subdirectory
     billboard_dir = os.path.join('output', 'billboard')
@@ -45,15 +46,15 @@ def main():
         for key, val in final_dict[i].items():
             # Convert dicts and lists represented as strings into their respective objects
             if isinstance(val, str) and len(val) >= 2 and val[0] in ('[', '{') and val[-1] in {']', '}'}:
-                val = eval(val)
+                val = literal_eval(val)
                 final_dict[i][key] = val
 
             # What if we have a list of dicts? eval() converts this into a list of strings, so we need to make these dicts
             if isinstance(val, list) and len(list(filter(lambda x: isinstance(x, str), val))) > 0:
                 try:
-                    val = list(map(eval, val))
+                    val = list(map(literal_eval, val))
                     final_dict[i][key] = val
-                except:
+                except KeyError:
                     pass
 
     print('Grouping duplicated fields')

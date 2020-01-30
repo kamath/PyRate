@@ -8,8 +8,11 @@ def main():
     import os
     from time import sleep
 
-    if 'billboard' not in os.listdir('output'):
-        os.system('mkdir output/billboard')
+    if not os.path.exists(os.path.join('output')):
+        os.mkdir('output')
+
+    if not os.path.exists(os.path.join('output', 'billboard')):
+        os.mkdir(os.path.join('output', 'billboard'))
 
     # Latest available Billboard data for template constructor
     today = datetime(2018, 12, 22)

@@ -1,20 +1,10 @@
-from scraper.spotify import Spotify
-
-from model.spotify.album import Album
-from model.spotify.artist import Artist
-from model.spotify.image import Image
-from model.spotify.market import Market
-from model.spotify.playlist import Playlist
-from model.spotify.track import Track
-from model.spotify.user import User
-
-from neomodel import StructuredNode, StringProperty, IntegerProperty, FloatProperty, BooleanProperty, JSONProperty, ArrayProperty
-from neomodel import RelationshipTo, RelationshipFrom, config
-from neomodel.match import Traversal, OUTGOING, INCOMING, EITHER
+from time import time
 
 import pandas as pd
-from time import time, sleep
-import os
+from neomodel import config
+
+from model.spotify.track import Track
+
 
 def main():
     # TODO: change password
