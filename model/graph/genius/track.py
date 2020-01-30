@@ -1,7 +1,10 @@
-from neomodel import StructuredNode, StringProperty, IntegerProperty, FloatProperty, BooleanProperty, JSONProperty, \
-    ArrayProperty, RelationshipTo, RelationshipFrom, db, DateProperty
-from model.graph import exists
 from datetime import datetime
+
+from neomodel import StructuredNode, StringProperty, IntegerProperty, BooleanProperty, JSONProperty, \
+    ArrayProperty, RelationshipFrom, DateProperty
+
+from model.graph import exists
+
 
 class Track(StructuredNode):
     '''
@@ -61,12 +64,4 @@ class Track(StructuredNode):
 
         # TODO: clean this shit
 
-        return obj
-
-    @classmethod
-    @db.transaction
-    def add_genius(cls, uri, data):
-        track = cls.nodes.get_or_none(uri=uri)
-        if track:
-            track.genius_data = data
-            track.save()
+        raise NotImplementedError('Not fully implemented yet')
