@@ -10,9 +10,9 @@ class Playlist(StructuredNode):
     Represents a Playlist on Spotify
     '''
 
-    owner = RelationshipTo('model.spotify.user.User', 'OWNED BY')
+    owner = RelationshipTo('model.spotify.json.user.User', 'OWNED BY')
 
-    tracks = RelationshipFrom('model.spotify.track.Track', 'FEATURED IN')
+    tracks = RelationshipFrom('model.spotify.json.track.Track', 'FEATURED IN')
 
     spotify_id = StringProperty(unique_index=True)
     name = StringProperty()

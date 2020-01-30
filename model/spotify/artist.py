@@ -9,8 +9,8 @@ class Artist(StructuredNode):
     Represents an artist on Spotify as per Spotify API
     '''
 
-    tracks = RelationshipFrom('model.spotify.track.Track', 'BY')
-    albums = RelationshipFrom('model.spotify.album.Album', 'BY')
+    tracks = RelationshipFrom('model.spotify.json.track.Track', 'BY')
+    albums = RelationshipFrom('model.spotify.json.album.Album', 'BY')
 
     external_urls = JSONProperty()
     href = StringProperty()

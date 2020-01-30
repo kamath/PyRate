@@ -5,9 +5,9 @@ from model.spotify import exists
 
 
 class Album(StructuredNode):
-    artists = RelationshipTo('model.spotify.artist.Artist', 'BY')
+    artists = RelationshipTo('model.spotify.json.artist.Artist', 'BY')
 
-    tracks = RelationshipFrom('model.spotify.track.Track', 'FROM')
+    tracks = RelationshipFrom('model.spotify.json.track.Track', 'FROM')
 
     available_markets = ArrayProperty()
     images = JSONProperty()

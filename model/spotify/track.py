@@ -12,9 +12,9 @@ class Track(StructuredNode):
     '''
     Represents a Track on Spotify
     '''
-    album = RelationshipTo('model.spotify.album.Album', 'FROM')
-    artists = RelationshipTo('model.spotify.artist.Artist', 'BY')
-    playlists = RelationshipTo('model.spotify.playlist.Playlist', 'FEATURED IN')
+    album = RelationshipTo('model.spotify.json.album.Album', 'FROM')
+    artists = RelationshipTo('model.spotify.json.artist.Artist', 'BY')
+    playlists = RelationshipTo('model.spotify.json.playlist.Playlist', 'FEATURED IN')
 
     available_markets = ArrayProperty()
     disc_number = IntegerProperty()

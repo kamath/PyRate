@@ -36,7 +36,7 @@ def main():
     user_id = Spotify.get_current_user()['id']
 
     # Limit to just my playlists and playlists created by Spotify
-    playlists = [Playlist.inst(**a) for a in playlists if a['owner']['id'] in (user_id, 'spotify', 'spotifycharts')]
+    playlists = [Playlist.inst(**a) for a in playlists if a['owner']['id'] in (user_id, 'spotify.json', 'spotifycharts')]
 
     for i, p in enumerate(playlists):
         print(i, len(playlists))

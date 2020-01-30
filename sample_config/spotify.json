@@ -1,0 +1,10 @@
+// MUST GET SPOTIFY API ACCESS TOKEN AND REFRESH TOKEN SEPARATELY
+
+{"access_token": "SAMPLE_ACCESS_TOKEN",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "streaming user-modify-playback-state playlist-modify-private playlist-modify-public user-read-playback-state user-read-currently-playing user-read-recently-played user-top-read",
+  "CLIENT_ID": "YOUR_CLIENT_ID",
+  "CLIENT_SECRET": "YOUR_CLIENT_SECRET",
+  "EXPIRES": "2020-01-29 20:12:10.739606",
+  "REFRESH_TOKEN": "YOUR_REFRESH_TOKEN"}

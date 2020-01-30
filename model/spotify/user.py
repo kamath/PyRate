@@ -9,7 +9,7 @@ class User(StructuredNode):
     Represents a user on Spotify as per Spotify API
     '''
 
-    playlists = RelationshipFrom('model.spotify.playlist.Playlist', 'OWNED BY')
+    playlists = RelationshipFrom('model.spotify.json.playlist.Playlist', 'OWNED BY')
 
     display_name = StringProperty()
     external_urls = JSONProperty()
