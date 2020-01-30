@@ -24,6 +24,11 @@ PyRate is a music data collator that aims to create "shuffling channels" to help
 Below, you can see how the Neo4J data is organized:
 ![Schema](static/schema.jpg)
 
+#### Sample data
+You can see how this can be applied in an actual cluster, where brown nodes are **tracks**, green nodes are **albums**, red nodes are **artists**, and orange are **playlists**:
+
+![example](static/example.png)
+
 
 ## Directory breakdown
 - <code>input/</code>
