@@ -7,4 +7,4 @@ def main():
     a = Analyzer()
     bars = a.read_file('input/lyrics/jid_never.txt')
     print('bars')
-    print(bars)
+    print(a.analyze_assonance(bars))

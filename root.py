@@ -1,2 +1,2 @@
-from samples.fetch_spotify import main
+from samples.pronunciation_predictions import main
 main()

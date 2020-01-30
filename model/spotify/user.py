@@ -1,9 +1,8 @@
-from collections import namedtuple
-from typing import *
+from neomodel import RelationshipFrom
+from neomodel import StructuredNode, StringProperty, JSONProperty
 
-from neomodel import StructuredNode, StringProperty, IntegerProperty, FloatProperty, BooleanProperty, JSONProperty, ArrayProperty
-from neomodel import RelationshipTo, RelationshipFrom, config
 from model.spotify import exists
+
 
 class User(StructuredNode):
     '''

@@ -6,19 +6,8 @@ from typing import *
 import os
 
 class Spotify:
-    def __init__(self):
-        '''
-        Initializes the Spotify class. Every method aims to be a class object that initializes this every time so
-        if the access token expires, the constructor automatically updates the access token using the refresh token
-        '''
-        access = json.load(open(os.path.join('config', 'spotify.json'), 'r'))
-        expires = datetime.strptime(access['EXPIRES'], "%Y-%m-%d %H:%M:%S.%f")
-        if datetime.now() > expires:
-            self.data = self.refresh_token()
-        else:
-            self.data = access
-
-    def refresh_token(self) -> json:
+    @classmethod
+    def refresh_token(cls) -> json:
         '''
         Refreshes the access token
 
@@ -30,13 +19,11 @@ class Spotify:
         CLIENT_SECRET = access['CLIENT_SECRET']
         auth_str = bytes('{}:{}'.format(CLIENT_ID, CLIENT_SECRET), 'utf-8')
         b64_auth_str = base64.b64encode(auth_str).decode('utf-8')
-        authorization_header = {"Authorization": "Bearer {}".format(access['access_token'])}
-        auth_str = bytes('{}:{}'.format(CLIENT_ID, CLIENT_SECRET), 'utf-8')
 
         response = requests.post('https://accounts.spotify.com/api/token',
-                                     headers={'Authorization': f'Basic {b64_auth_str}'},
-                                     data={"grant_type": "refresh_token",
-                                           'refresh_token': access['REFRESH_TOKEN']})
+                                 headers={'Authorization': f'Basic {b64_auth_str}'},
+                                 data={"grant_type": "refresh_token",
+                                       'refresh_token': access['REFRESH_TOKEN']})
         data = json.loads(response.text)
         data['CLIENT_ID'] = CLIENT_ID
         data['CLIENT_SECRET'] = CLIENT_SECRET
@@ -46,6 +33,18 @@ class Spotify:
         # Saves the new access data
         open(os.path.join('config', 'spotify.json'), 'w').write(json.dumps(data))
         return data
+
+    def __init__(self):
+        '''
+        Initializes the Spotify class. Every method aims to be a class object that initializes this every time so
+        if the access token expires, the constructor automatically updates the access token using the refresh token
+        '''
+        access = json.load(open(os.path.join('config', 'spotify.json'), 'r'))
+        expires = datetime.strptime(access['EXPIRES'], "%Y-%m-%d %H:%M:%S.%f")
+        if datetime.now() > expires:
+            self.data = self.refresh_token()
+        else:
+            self.data = access
 
     def _ping_spotify(self, endpoint: str):
         ACCESS_TOKEN=self.data['access_token']
@@ -87,8 +86,8 @@ class Spotify:
             data = cls()._ping_spotify(f'{endpoint}?offset={offset}')
             items += data['items']
             fetched += len(data['items'])
-            next = data['next']
-            if next:
+            next_item = data['next']
+            if next_item:
                 offset = int(data['next'].split('?')[-1].split('&')[0].split('=')[-1])
             else:
                 break

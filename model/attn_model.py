@@ -42,28 +42,8 @@ class LSTM_Model:
         id_to_str = {i: s for i, s in enumerate(str_list)}
         return str_to_id, id_to_str
 
-    def __init__(self):
-        self.phonetic_dict = self.load_clean_phonetic_dictionary()
-        self.example_count = np.sum([len(prons) for _, prons in self.phonetic_dict.items()])
-        # Create character to ID mappings
-        self.char_to_id, self.id_to_char = self.id_mappings_from_list(self.char_list())
-
-        # Load phonetic symbols and create ID mappings
-        self.phone_to_id, self.id_to_phone = self.id_mappings_from_list(self.phone_list())
-
-        # Example:
-        print('Char to id mapping: \n', self.char_to_id)
-
-        self.CHAR_TOKEN_COUNT = len(self.char_to_id)
-        self.PHONE_TOKEN_COUNT = len(self.phone_to_id)
-        self.MAX_CHAR_SEQ_LEN = max([len(word) for word, _ in self.phonetic_dict.items()])
-        self.MAX_PHONE_SEQ_LEN = max([max([len(pron.split()) for pron in pronuns]) for _, pronuns in self.phonetic_dict.items()])
-        ATTENTION_MODEL_WEIGHTS = os.path.join(
-            'input', 'predicting-english-pronunciations-model-weights', 'attention_model_weights.hdf5')
-        self.attention_model()
-        self.model.load_weights(ATTENTION_MODEL_WEIGHTS)
-
-    def load_clean_phonetic_dictionary(self):
+    @staticmethod
+    def load_clean_phonetic_dictionary():
 
         def is_alternate_pho_spelling(word):
             # No word has > 9 alternate pronounciations so this is safe
@@ -108,10 +88,32 @@ class LSTM_Model:
                          for key in random.sample(list(phonetic_dict.keys()), 5000)}
         return phonetic_dict
 
-    def char_list(self):
+    @staticmethod
+    def char_list():
         allowed_symbols = [".", "-", "'"]
         uppercase_letters = list(string.ascii_uppercase)
         return [''] + allowed_symbols + uppercase_letters
+
+    def __init__(self):
+        self.phonetic_dict = self.load_clean_phonetic_dictionary()
+        self.example_count = np.sum([len(prons) for _, prons in self.phonetic_dict.items()])
+        # Create character to ID mappings
+        self.char_to_id, self.id_to_char = self.id_mappings_from_list(self.char_list())
+
+        # Load phonetic symbols and create ID mappings
+        self.phone_to_id, self.id_to_phone = self.id_mappings_from_list(self.phone_list())
+
+        # Example:
+        print('Char to id mapping: \n', self.char_to_id)
+
+        self.CHAR_TOKEN_COUNT = len(self.char_to_id)
+        self.PHONE_TOKEN_COUNT = len(self.phone_to_id)
+        self.MAX_CHAR_SEQ_LEN = max([len(word) for word, _ in self.phonetic_dict.items()])
+        self.MAX_PHONE_SEQ_LEN = max([max([len(pron.split()) for pron in pronuns]) for _, pronuns in self.phonetic_dict.items()])
+        ATTENTION_MODEL_WEIGHTS = os.path.join(
+            'input', 'predicting-english-pronunciations-model-weights', 'attention_model_weights.hdf5')
+        self.attention_model()
+        self.model.load_weights(ATTENTION_MODEL_WEIGHTS)
 
     def embed_word(self, words):
         tor = []
@@ -169,7 +171,7 @@ class LSTM_Model:
         phone_inputs = []
         phone_outputs = []
 
-        for t in range(self.MAX_PHONE_SEQ_LEN):
+        for _ in range(self.MAX_PHONE_SEQ_LEN):
             phone_input = Input(shape=(None,))
             phone_embeddings = phone_embedding_layer(phone_input)
             phone_embeddings = Dropout(0.5)(phone_embeddings)

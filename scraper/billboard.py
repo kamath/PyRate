@@ -42,11 +42,12 @@ class Billboard:
         main_df = pd.DataFrame(json.loads(soup['data-charts']))
 
         if save_csv:
-            if week in os.listdir('output/billboard'):
-                if replace:
-                    os.system(f'rm -rf output/billboard/{week}')
-            else:
-                os.system(f'mkdir output/billboard/{week}')
+            if not os.path.exists(os.path.join('output', 'billboard', week)):
+                os.mkdir(os.path.join('output', 'billboard', week))
+
+            elif replace:
+                os.rmdir(os.path.join('output', 'billboard', week))
+
 
             main_df.to_csv(os.path.join('output', 'billboard', week, 'main.csv'))
 

@@ -4,17 +4,18 @@ from collections import Counter
 
 class Analyzer:
     @staticmethod
-    def count_ngrams(bars: List[str]) -> Dict[int, Dict]:
+    def count_ngrams(bars: List[str]) -> Dict[int, Dict[Tuple[str], int]]:
         '''
-        Returns the total n-grams of
+        Returns the count of each n-gram in the bar
         :param bars: the bars list separated by 'END'
-        :return: all the n-grams within the bars
+        :return: {n: {ngram: count}}
         '''
         tor = {}
         for n in range(2, len(bars)):
             grams = [tuple(bars[i + x] for i in range(n)) for x in range(len(bars) - n)]
             tor[n] = dict(Counter(grams))
             tor[n] = dict(list(filter(lambda x: x[1] > 1, tor[n].items())))
+        print('tor', tor)
         return tor
 
     def __init__(self):
@@ -50,6 +51,3 @@ class Analyzer:
             flattened.append('END')
 
         return flattened
-
-    def analyze_assonance(self, bars: List[str]) -> Dict[int, Dict[Tuple[str], int]]:
-        return self.count_ngrams(bars)

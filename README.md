@@ -3,11 +3,11 @@
 PyRate is a music data collator that aims to create "shuffling channels" to help you navigate your music listening journey. 
 
 #### Milestones Reached
-- Fully functional lyric pronunciation prediction model via LSTM trained on CMU Pronunciation Dictionary
-- Fully functional Spotify and Genius API classes
-- Scraped Billboard to get historical chart data from week 1 in 1968
+- Fully functional [lyric pronunciation prediction model](model/rap_analyzer.py) via [LSTM trained on CMU Pronunciation Dictionary](model/attn_model.py) courtesy of [this](https://www.kaggle.com/reppic/predicting-english-pronunciations) Jupyter Notebook on Kaggle 
+- Fully functional [Spotify](scraper/spotify.py) and [Genius](scraper/genius.py) API classes
+- [Scraped Billboard](scraper/billboard.py) to get historical chart data from week 1 in 1968
 - Profiling of a user's Spotify data to get all the user's playlists, all the tracks in each playlist, and all the tracks in each album of each track in the playlist.
-- Above data has been fully imported into AWS Neo4J Instance
+- Above data has been fully imported into AWS Neo4J Instance via [graph relational classes](model/spotify) provided by [Neomodel](https://neomodel.readthedocs.io/en/latest/#)
 
 #### To Do
 - Implement view
