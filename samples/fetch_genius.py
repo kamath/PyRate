@@ -6,7 +6,7 @@ def main():
     import re
     from time import sleep
 
-    songs: json = json.load(open(os.path.join('output', 'billboard.json'), 'r'))
+    songs = json.load(open(os.path.join('output', 'billboard.json'), 'r'))
 
     for key, val in tqdm(songs.items()):
         primary_artist = min(val['credited_artists'], key=lambda x: x['ordinal'])['artist_name']

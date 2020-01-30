@@ -19,8 +19,6 @@ def main():
     from tqdm import tqdm
 
     from neomodel import config
-    import json
-    import os
 
     def helper(track):
         track = track['track']
