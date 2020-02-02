@@ -18,6 +18,26 @@ class Node(StructuredNode):
     def exists(cls, identifier):
         raise NotImplementedError
 
+    @classmethod
+    def clean(cls, **kwargs) -> Tuple[StructuredNode, Dict[str, dict]]:
+        '''
+        Cleans default kwargs and instantiates the object
+
+        :param kwargs: the params to instantiate the given StructuredNode object
+        :return: the instantiated object
+        '''
+        raise NotImplementedError
+
+    @classmethod
+    def inst(cls, **kwargs):
+        '''
+        Abstract method to instantiate the object directly from the class instead of from the Node class
+
+        :param kwargs: the args to instantiate the object
+        :return: the object
+        '''
+        raise NotImplementedError
+
     @staticmethod
     def post_clean(obj, to_connect: dict) -> StructuredNode:
         '''
@@ -30,16 +50,6 @@ class Node(StructuredNode):
         return obj
 
     @classmethod
-    def clean(cls, **kwargs) -> Tuple[StructuredNode, Dict[str, dict]]:
-        '''
-        Cleans default kwargs and instantiates the object
-
-        :param kwargs: the params to instantiate the given StructuredNode object
-        :return: the instantiated object
-        '''
-        raise NotImplementedError
-
-    @classmethod
     def build(cls, subclass, identifier: dict, **kwargs) -> StructuredNode:
         '''
         Instantiates the object
@@ -49,7 +59,6 @@ class Node(StructuredNode):
         :param kwargs: the remaining args to instantiate the object
         :return: the object
         '''
-
         e: cls = subclass.exists(identifier)
 
         if e:
@@ -58,10 +67,6 @@ class Node(StructuredNode):
         obj, to_connect = subclass.clean(**kwargs)
         obj.save()
         return subclass.post_clean(obj, to_connect)
-
-    @classmethod
-    def inst(cls, **kwargs):
-        raise NotImplementedError
 
 def connection_url(aws=False):
     if aws:

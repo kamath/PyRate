@@ -4,6 +4,17 @@ def main():
     from ast import literal_eval
     from scraper.genius import Genius
     from scraper.spotify import Spotify
+    from model.graph import connection_url
+    from model.graph.billboard.track import Track
+    from neomodel import db, clear_neo4j_database, config
+
+    url = connection_url()
+    print(url)
+    config.DATABASE_URL = url
+    db.set_connection(url)
+    print('connected')
+
+    clear_neo4j_database(db)
 
     BILLBOARD_DIR = os.path.join('output', 'billboard')
     weeks = os.listdir(BILLBOARD_DIR)
@@ -11,6 +22,8 @@ def main():
     for week in weeks:
         df = pd.read_csv(os.path.join(BILLBOARD_DIR, week, 'main.csv'))
         for i, row in df.iterrows():
+            billboard_track = Track.inst(**dict(row))
+            print(billboard_track)
             # Sort artists by appearance in the title
             artists = ', '.join(list(map(lambda x: x['artist_name'],
                                sorted(literal_eval(row['credited_artists']), key=lambda x: x['ordinal']))))
