@@ -60,15 +60,14 @@ def main():
 
         for track in tqdm(tracks):
             sleep_time = .5
-            helper(track)
-            # while True:
-            #     try:
-            #         helper(track)
-            #         break
-            #     except KeyError:
-            #         print('\nHaving trouble getting', track['track']['name'], track['track']['uri'])
-            #         print('Sleeping', sleep_time)
-            #         sleep(sleep_time)
-            #         sleep_time *= 2
-            #         if sleep_time > 100:
-            #             break
+            while True:
+                try:
+                    helper(track)
+                    break
+                except KeyError:
+                    print('\nHaving trouble getting', track['track']['name'], track['track']['uri'])
+                    print('Sleeping', sleep_time)
+                    sleep(sleep_time)
+                    sleep_time *= 2
+                    if sleep_time > 100:
+                        break
