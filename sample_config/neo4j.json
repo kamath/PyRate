@@ -1,7 +1,7 @@
  {
   "url": "http://localhost:7474/browser/",
   "bolt_port": 7687,
-   "dns": "localhost",
+  "dns": "localhost",
   "user": "neo4j",
   "pass": "neo4j"
 }

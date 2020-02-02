@@ -1,11 +1,11 @@
 from neomodel import RelationshipTo, RelationshipFrom
 from neomodel import StructuredNode, StringProperty, BooleanProperty, JSONProperty
 
-from model.graph import exists
+from model.graph.spotify import SpotifyNode
 from model.graph.spotify.user import User
 
 
-class Playlist(StructuredNode):
+class Playlist(SpotifyNode):
     '''
     Represents a Playlist on Spotify
     '''
@@ -27,22 +27,21 @@ class Playlist(StructuredNode):
     type = StringProperty()
     uri = StringProperty()
 
-    @classmethod
-    def inst(cls, **kwargs):
-        e = exists(cls, kwargs.get('id'))
-        if e:
-            return e
-
-        if 'tracks' in kwargs:
-            del kwargs['tracks']
-
-        owner = kwargs.pop('owner')
-        kwargs['spotify_id'] = kwargs.pop('id')
-
-        obj = cls(**kwargs).save()
-
+    @staticmethod
+    def post_clean(obj, to_connect: dict):
+        from model.graph.spotify.user import User
+        owner = to_connect['owner']
         owner = User.inst(**owner)
         obj.owner.connect(owner)
-
         return obj
 
+    @classmethod
+    def clean(cls, **kwargs):
+        if 'tracks' in kwargs:
+            del kwargs['tracks']
+        if 'id' in kwargs:
+            kwargs['spotify_id'] = kwargs.pop('id')
+
+        to_connect = {'owner': kwargs.pop('owner')}
+        obj = cls(**kwargs)
+        return obj, to_connect

@@ -13,6 +13,7 @@ PyRate is a music data collator that aims to create "shuffling channels" to help
 - Class built to [associate Spotify songs with Genius data](samples/associate_genius.py), but since Genius only associates with "popular" Spotify songs, only a small number of tracks were found on Genius with Spotify data.
 
 #### To Do
+- Finish classes for Genius data (users, annotations, artists, etc.)
 - Implement view
 - Implement "smart shuffle"
 - Search Genius for each Billboard song and get Spotify URIs for each Billboard node, then add join that with the track node

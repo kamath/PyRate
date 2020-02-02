@@ -3,9 +3,6 @@ from datetime import datetime
 from neomodel import StructuredNode, StringProperty, IntegerProperty, BooleanProperty, JSONProperty, \
     ArrayProperty, RelationshipFrom, DateProperty
 
-from model.graph import exists
-
-
 class Track(StructuredNode):
     '''
     Represents track data from Genius.com

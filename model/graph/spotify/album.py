@@ -1,10 +1,10 @@
 from neomodel import RelationshipTo, RelationshipFrom
-from neomodel import StructuredNode, StringProperty, IntegerProperty, JSONProperty, ArrayProperty
+from neomodel import StringProperty, IntegerProperty, JSONProperty, ArrayProperty
 
-from model.graph import exists
+from model.graph.spotify import SpotifyNode
 
 
-class Album(StructuredNode):
+class Album(SpotifyNode):
     artists = RelationshipTo('model.graph.spotify.artist.Artist', 'BY')
 
     tracks = RelationshipFrom('model.graph.spotify.track.Track', 'FROM')
@@ -23,21 +23,20 @@ class Album(StructuredNode):
     type = StringProperty()
     uri = StringProperty()
 
-    @classmethod
-    def inst(cls, **kwargs):
-        e = exists(cls, kwargs.get('id'))
-        if e:
-            return e
-
-        artists = kwargs.pop('artists')
-
-        kwargs['spotify_id'] = kwargs.pop('id')
-
-        obj = cls(**kwargs).save()
-
+    @staticmethod
+    def post_clean(obj, to_connect: dict):
         from model.graph.spotify.artist import Artist
-        artists = [Artist.inst(**a) for a in artists]
+
+        artists = [Artist.inst(**a) for a in to_connect['artists']]
         for artist in artists:
             obj.artists.connect(artist)
 
         return obj
+
+    @classmethod
+    def clean(cls, **kwargs):
+        to_connect = {'artists': kwargs.pop('artists')}
+        if 'id' in kwargs:
+            kwargs['spotify_id'] = kwargs.pop('id')
+        obj = cls(**kwargs)
+        return obj, to_connect

@@ -1,15 +1,14 @@
 from neomodel import RelationshipFrom
 from neomodel import StructuredNode, StringProperty, JSONProperty
 
-from model.graph import exists
+from model.graph.spotify import SpotifyNode
 
-
-class User(StructuredNode):
+class User(SpotifyNode):
     '''
     Represents a user on Spotify as per Spotify API
     '''
 
-    playlists = RelationshipFrom('model.graph.playlist.Playlist', 'OWNED BY')
+    playlists = RelationshipFrom('model.graph.spotify.playlist.Playlist', 'OWNED BY')
 
     display_name = StringProperty()
     external_urls = JSONProperty()
@@ -19,10 +18,7 @@ class User(StructuredNode):
     uri = StringProperty()
 
     @classmethod
-    def inst(cls, **kwargs):
-        e = exists(cls, kwargs.get('id'))
-        if e:
-            return e
-
-        kwargs['spotify_id'] = kwargs.pop('id')
-        return cls(**kwargs).save()
+    def clean(cls, **kwargs):
+        if 'id' in kwargs:
+            kwargs['spotify_id'] = kwargs.pop('id')
+        return cls(**kwargs), {}
