@@ -1,7 +1,6 @@
 from neomodel import RelationshipFrom
 from neomodel import StructuredNode, StringProperty, JSONProperty, IntegerProperty, FloatProperty
 
-from model.graph import Credited
 from model.graph.spotify import SpotifyNode
 
 class Artist(SpotifyNode):
@@ -18,21 +17,6 @@ class Artist(SpotifyNode):
     name = StringProperty()
     type = StringProperty()
     uri = StringProperty()
-
-    # ------------------------------------------------------------------------------------------------------------------
-
-    billboard_tracks = RelationshipFrom('model.graph.billboard.track.Track', 'BY', model=Credited)
-
-    billboard_slug = StringProperty(unique_index=True)
-    billboard_type = StringProperty()
-    billboard_id = IntegerProperty(unique_index=True)
-    billboard_name = StringProperty()
-    billboard_vevo_id = FloatProperty(unique_index=True)
-    billboard_brightcove_id = FloatProperty()
-    billboard_content_url = StringProperty()
-    billboard_images = JSONProperty()
-    billboard_brightcove_data = JSONProperty()
-    billboard_url = StringProperty(unique_index=True)
 
     # ------------------------------------------------------------------------------------------------------------------
 

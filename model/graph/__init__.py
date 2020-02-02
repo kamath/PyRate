@@ -4,10 +4,6 @@ from neomodel import StructuredRel, StructuredNode, IntegerProperty, FloatProper
 from abc import ABC, abstractmethod
 from typing import *
 
-class Credited(StructuredRel):
-    ordinal = IntegerProperty()
-    credit = FloatProperty()
-
 class Node(StructuredNode):
     __abstract_node__ = True
 
@@ -26,7 +22,7 @@ class Node(StructuredNode):
         :param kwargs: the params to instantiate the given StructuredNode object
         :return: the instantiated object
         '''
-        raise NotImplementedError
+        return cls(**kwargs), {}
 
     @classmethod
     def inst(cls, **kwargs):

@@ -2,8 +2,10 @@ from datetime import datetime
 
 from neomodel import StructuredNode, StringProperty, IntegerProperty, BooleanProperty, JSONProperty, \
     ArrayProperty, RelationshipFrom, DateProperty
+from model.graph.genius import GeniusNode
+from typing import *
 
-class Track(StructuredNode):
+class Track(GeniusNode):
     '''
     Represents track data from Genius.com
     '''
@@ -50,15 +52,10 @@ class Track(StructuredNode):
     media = JSONProperty()
 
     @classmethod
-    def inst(cls, **kwargs):
-        e = exists(cls, kwargs.get('id'))
-        if e:
-            return e
-
+    def clean(cls, **kwargs) -> Tuple[StructuredNode, Dict[str, dict]]:
         kwargs['genius_id'] = kwargs.pop('id')
         kwargs['release_date'] = datetime(*map(int, kwargs['release_date'].split('-')))
         kwargs.pop('current_user_metadata')
 
         # TODO: clean this shit
-
         raise NotImplementedError('Not fully implemented yet')
