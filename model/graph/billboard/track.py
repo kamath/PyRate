@@ -8,6 +8,7 @@ from model.graph.billboard.producer import Producer
 from model.graph.billboard.writer import Writer
 from model.graph.billboard.publisher import Publisher
 from model.graph.billboard.label import Label
+from model.graph.genius.track import Track as GeniusTrack
 
 from scraper.genius import Genius
 from scraper.spotify import Spotify
@@ -127,6 +128,7 @@ class Track(BillboardNode):
         for hit in genius_resp[:1]:
             hit = hit['result']
             song_data = Genius.get_song(hit['id'])['response']['song']
+            genius_node = GeniusTrack.inst(**song_data)
             print("song data", song_data)
             if 'spotify' in [a['provider'] for a in song_data['media']]:
                 print('Spotify exists!')

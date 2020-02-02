@@ -18,7 +18,7 @@ class Track(SpotifyNode):
     playlists = RelationshipTo('model.graph.spotify.playlist.Playlist', 'FEATURED IN')
 
     # billboard_data = RelationshipTo('model.graph.billboard.track.Track', 'RANKED AS')
-    # genius_data = RelationshipTo('model.graph.genius.track.Track', 'ON GENIUS AS')
+    genius_data = RelationshipTo('model.graph.genius.track.Track', 'ON GENIUS AS')
 
     available_markets = ArrayProperty()
     disc_number = IntegerProperty()
