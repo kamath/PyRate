@@ -1,9 +1,8 @@
-from datetime import datetime
-
 from neomodel import StructuredNode, StringProperty, IntegerProperty, BooleanProperty, JSONProperty, \
-    ArrayProperty, RelationshipFrom, DateProperty
+    ArrayProperty, RelationshipFrom
+from model.graph.genius import GeniusNode
 
-class Artist(StructuredNode):
+class Artist(GeniusNode):
     '''
     Represents artist data from Genius.com
     '''
@@ -30,10 +29,6 @@ class Artist(StructuredNode):
 
     @classmethod
     def inst(cls, **kwargs):
-        e = exists(cls, kwargs.get('id'))
-        if e:
-            return e
-
         del kwargs['current_user_metadata']
         kwargs['genius_id'] = kwargs.pop('id')
         kwargs['description'] = kwargs['description']['plain']

@@ -1,9 +1,9 @@
-from datetime import datetime
-
 from neomodel import StructuredNode, StringProperty, IntegerProperty, BooleanProperty, JSONProperty, \
-    ArrayProperty, RelationshipFrom, DateProperty
+    ArrayProperty
+from model.graph.genius import GeniusNode
 
-class Annotation(StructuredNode):
+
+class Annotation(GeniusNode):
     '''
     Represents annotation data from Genius.com
     '''
@@ -33,10 +33,6 @@ class Annotation(StructuredNode):
 
     @classmethod
     def inst(cls, **kwargs):
-        e = exists(cls, kwargs.get('id'))
-        if e:
-            return e
-
         del kwargs['current_user_metadata']
         kwargs['genius_id'] = kwargs.pop('id')
         kwargs['body'] = kwargs['body']['plain']
