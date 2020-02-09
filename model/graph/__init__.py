@@ -1,8 +1,20 @@
 import json, os
 
-from neomodel import StructuredRel, StructuredNode, IntegerProperty, FloatProperty
+from neomodel import StructuredRel, StructuredNode, IntegerProperty, FloatProperty, db
 from abc import ABC, abstractmethod
 from typing import *
+
+def connection_url(aws=True):
+    if aws:
+        config_path = os.path.join('config', 'neo4j.json')
+    else:
+        config_path = os.path.join('sample_config', 'neo4j.json')
+    neo4j_vars = json.load(open(config_path, 'r'))
+    user = neo4j_vars['user']
+    pw = neo4j_vars['pass']
+    dns = neo4j_vars['dns']
+    port = neo4j_vars['bolt_port']
+    return f"bolt://{user}:{pw}@{dns}:{port}"
 
 class Node(StructuredNode):
     __abstract_node__ = True
@@ -64,14 +76,15 @@ class Node(StructuredNode):
         obj.save()
         return subclass.post_clean(obj, to_connect)
 
-def connection_url(aws=False):
-    if aws:
-        config_path = os.path.join('config', 'neo4j.json')
-    else:
-        config_path = os.path.join('sample_config', 'neo4j.json')
-    neo4j_vars = json.load(open(config_path, 'r'))
-    user = neo4j_vars['user']
-    pw = neo4j_vars['pass']
-    dns = neo4j_vars['dns']
-    port = neo4j_vars['bolt_port']
-    return f"bolt://{user}:{pw}@{dns}:{port}"
+    @classmethod
+    def paginate(cls, limit, offset=0):
+        '''
+        Allows for staging queries so you don't fit the entire query results in one thing
+        :param limit: rows to limit
+        :param offset: rows to offset by
+        :return: the rows as node objects
+        '''
+        db.set_connection(connection_url())
+        name = cls().__class__.__name__
+        results, meta = db.cypher_query(f'MATCH (n: {name}) RETURN n SKIP {offset} LIMIT {limit}')
+        return [cls.inflate(row[0]) for row in results]
