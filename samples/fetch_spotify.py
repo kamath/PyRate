@@ -11,20 +11,19 @@ def main():
 
     from scraper.spotify import Spotify
 
-    from neomodel import clear_neo4j_database
-
-    from model.graph import connection_url, Node
-    from model.graph.spotify.playlist import Playlist
-    from model.graph.spotify.track import Track
+    from model.spotify.playlist import Playlist
+    from model.spotify.track import Track
 
     from time import sleep
     from tqdm import tqdm
 
-    from neomodel import config, db
+    from neomodel import config
+    import json
+    import os
 
     def helper(track):
         track = track['track']
-        track_obj: Track = Track.inst(**track)
+        track_obj = Track.inst(**track)
         for album in track_obj.album:
             for t in Spotify.get_album_tracks(album.uri):
                 t['album'] = track['album']
@@ -32,23 +31,22 @@ def main():
                 t.album.connect(album)
             track_obj.playlists.connect(p)
 
-    url = connection_url()
-    print(url)
-    config.DATABASE_URL = url
-    db.set_connection(url)
-    print('connected')
-
-    clear_neo4j_database(db)
+    neo4j_vars = json.load(open(os.path.join('config', 'neo4j.json'), 'r'))
+    user = neo4j_vars['user']
+    pw = neo4j_vars['pass']
+    dns = neo4j_vars['dns']
+    port = neo4j_vars['bolt_port']
+    config.DATABASE_URL = f"bolt://{user}:{pw}@{dns}:{port}"
 
     playlists = Spotify.get_user_playlists()
     user_id = Spotify.get_current_user()['id']
 
-    print('Fetched playlists for ', user_id)
     # Limit to just my playlists and playlists created by Spotify
-    playlists = [Playlist.inst(**a) for a in playlists if a['owner']['id'] in (user_id, 'spotify', 'spotifycharts')]
+    playlists = [Playlist.inst(**a) for a in playlists if a['owner']['id'] in (user_id)]#, 'spotify', 'spotifycharts')]
 
-    for i, p in enumerate(playlists):
-        print(i, len(playlists))
+    offset = 0
+    for i, p in enumerate(playlists[offset:]):
+        print(i + offset, len(playlists))
         sleep_time = .5
         while True:
             try:
@@ -59,15 +57,18 @@ def main():
                 sleep_time *= 2
 
         for track in tqdm(tracks):
-            sleep_time = .5
-            while True:
-                try:
-                    helper(track)
-                    break
-                except KeyError:
-                    print('\nHaving trouble getting', track['track']['name'], track['track']['uri'])
-                    print('Sleeping', sleep_time)
-                    sleep(sleep_time)
-                    sleep_time *= 2
-                    if sleep_time > 100:
+            if 'spotify:local:' not in track['track']['uri']:
+                sleep_time = .5
+                while True:
+                    try:
+                        helper(track)
                         break
+                    except KeyError:
+                        print(track['track'])
+                        print(sleep_time)
+                        sleep(sleep_time)
+                        sleep_time *= 2
+                        if sleep_time > 100:
+                            break
+            else:
+                print("NOT FOUND", track['track'])
