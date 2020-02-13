@@ -77,7 +77,7 @@ class Node(StructuredNode):
         return subclass.post_clean(obj, to_connect)
 
     @classmethod
-    def paginate(cls, limit, offset=0):
+    def paginate(cls, limit, offset=0, query=None):
         '''
         Allows for staging queries so you don't fit the entire query results in one thing
         :param limit: rows to limit
@@ -85,6 +85,29 @@ class Node(StructuredNode):
         :return: the rows as node objects
         '''
         db.set_connection(connection_url())
-        name = cls().__class__.__name__
-        results, meta = db.cypher_query(f'MATCH (n: {name}) RETURN n SKIP {offset} LIMIT {limit}')
+        name = cls.__label__
+        if query is None:
+            query = f'MATCH (n: {name}) RETURN n'
+        query += f' SKIP {offset} LIMIT {limit}'
+        results, meta = db.cypher_query(query=query)
         return [cls.inflate(row[0]) for row in results]
+
+    @classmethod
+    @db.read_transaction
+    def get_all(cls):
+        '''
+        Gets all the nodes associated with a given class since Neomodel's nodes.all() function doesn't work
+        :return: all the nodes associated with a given class
+        '''
+        results, meta = db.cypher_query(f'MATCH (n: {cls.__label__}) RETURN n')
+        return [cls.inflate(row[0]) for row in results]
+
+    def get_features(self, to_include: List[str]) -> Dict[str, any]:
+        '''
+        Gets specific values of a given node
+
+        :param args: the values to include
+        :return: the dictionary version of the class with only the provided keys
+        '''
+        vals = eval(str(self))
+        return {arg: vals[arg] for arg in to_include}

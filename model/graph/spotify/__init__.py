@@ -14,3 +14,6 @@ class SpotifyNode(Node):
             kwargs['spotify_id'] = kwargs.pop('id')
         tor = Node.build(cls, {'spotify_id': kwargs.get('spotify_id')}, **kwargs)
         return tor
+
+    def __hash__(self):
+        return hash(self.uri)

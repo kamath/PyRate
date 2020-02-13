@@ -46,11 +46,10 @@ class Spotify:
         else:
             self.data = access
 
-    def _ping_spotify(self, endpoint: str):
+    def _ping_spotify(self, endpoint: str, **data):
         ACCESS_TOKEN=self.data['access_token']
         resp = requests.get(f'https://api.spotify.com/v1/{endpoint}', headers=
             {'Authorization': f'Bearer {ACCESS_TOKEN}'})
-        # print(resp)
         return resp.json()
 
     @staticmethod
@@ -160,9 +159,6 @@ class Spotify:
         ids = list(map(Spotify.track_id, track_uris))
         ids = '%2C'.join(ids)
         d = cls()._ping_spotify(f'audio-features?ids={ids}')
-        print(d)
-        print(ids.replace("%2C", ','))
-        print(cls().data['access_token'])
         return d['audio_features']
 
     @classmethod
@@ -192,3 +188,29 @@ class Spotify:
         :return: the resulting json
         '''
         return cls()._ping_spotify(f'tracks/{cls.track_id(spotify_uri)}')
+
+    @classmethod
+    def get_currently_playing(cls) -> json:
+        '''
+        Gets currently playing data
+        :return: the currently playing data
+        '''
+        return cls()._ping_spotify('me/player/currently-playing')
+
+    @classmethod
+    def get_artists(cls, uris: List[str]) -> json:
+        '''
+        Gets artist data given the Spotify URI
+
+        :param uris: the list of Spotify URIs of the artists
+        :return: the resulting JSON data
+        '''
+        tor = cls()._ping_spotify('artists?ids='+'%2C'.join(list(map(cls.track_id, uris))[:45]))
+        return tor['artists']
+
+    @classmethod
+    def play(cls, **data):
+        access_token = cls().data['access_token']
+        response = requests.put('https://api.spotify.com/v1/me/player/play',
+                                headers={'Authorization': f'Bearer {access_token}'}, data=json.dumps(data))
+        return response

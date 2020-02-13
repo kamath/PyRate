@@ -8,3 +8,4 @@ output/*
 venv/
 output/bigass_billboard.csv
 config/*
+trained_models/*

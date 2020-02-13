@@ -1,0 +1,119 @@
+{% extends 'index.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<style>
+    .hscroll {
+        overflow-x: auto;
+        white-space: nowrap;
+        display: inline;
+    }
+
+    div.inline {
+        float: left;
+    }
+
+    .clearBoth {
+        clear: both;
+    }
+
+    .scrolling-wrapper {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        white-space: nowrap;
+    }
+
+    .swag {
+        display: inline-block;
+        margin-left: 25px;
+    }
+</style>
+<div class="grey darken-4 grey-text text-lighten-3">
+    <div class="container" style="padding-top: 60px; padding-bottom: 60px">
+        <h1>Currently Playing:</h1>
+
+        <div class="row">
+            <div class="col s3 square">
+                <!--                <img src="">-->
+            </div>
+            <div class="col s9">
+                <br>
+                <h3 class="wow fadeInUp">{{spotify_data['item']['name']}}</h3>
+                <a class="wow fadeInUp" data-wow-delay="250ms"
+                   href="/play/{{spotify_data['item']['album']['uri']}}">{{spotify_data['item']['album']['name']}}</a>
+                <br>
+                <span class="wow fadeInUp" data-wow-delay="450ms"><a
+                        href="/play/{{spotify_data['item']['artists'][0]['uri']}}">{{spotify_data['item']['artists'][0]['name']}}</a>
+                {% for artist in spotify_data['item']['artists'][1:] %}
+                , <a href="/play/{{artist['uri']}}">{{artist['name']}}</a></span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <h4 class="wow fadeIn" data-wow-delay="550ms">Artists associated with
+            {{spotify_data['item']['artists'][0]['name']}}:</h4>
+        <div class="scrolling-wrapper">
+            {% for artist in artist_data %}
+            <div class="swag wow fadeInUp" data-wow-delay="{{loop.index * 100}}ms" align="center">
+                <a href="/artists?artists={{spotify_data['item']['artists'][0]['uri']}},{{artist.uri}}">
+                    <div class="circle"
+                         style="height: 150px; width: 150px;
+                         background: url('{{artist['images'][0]['url']}}'); background-size: cover"></div>
+                    <br>
+                    <b><h6 style="margin: 0">{{artist.name}}</h6></b>
+                </a>
+            </div>
+            {% endfor %}
+            <br class="clearBoth"/>
+        </div>
+
+        <h4 class="wow fadeIn" data-wow-delay="550ms" style="padding-top: 25px">Playlists this song appears in:</h4>
+        <div class="scrolling-wrapper">
+            {% for playlist in playlists %}
+            <div class="swag" align="center">
+                <a href="/play/{{playlist.uri}}">
+                    <div class="circle"
+                         style="height: 150px; width: 150px;
+                         background: url('{{playlist.images[0]['url']}}'); background-size: cover"></div>
+                    <br>
+                    <b><h6 style="margin: 0">{{playlist.name}}</h6></b>
+                </a>
+            </div>
+            {% endfor %}
+            <br class="clearBoth"/>
+        </div>
+
+        <h4 class="wow fadeIn" data-wow-delay="550ms" style="padding-top: 25px">Songs in this playlist also feature
+            in:</h4>
+        <div class="scrolling-wrapper">
+            {% for playlist in similar_playlists %}
+            <div class="swag" align="center">
+                <a href="{{playlist.uri}}">
+                    <div class="circle"
+                         style="height: 150px; width: 150px;
+                         background: url('{{playlist.images[0]['url']}}'); background-size: cover"></div>
+                    <br>
+                    <b><h6 style="margin: 0">{{playlist.name}}</h6></b>
+                </a>
+            </div>
+            {% endfor %}
+            <br class="clearBoth"/>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(".square").css('height', $(".square").width());
+        $(".square").css('background', 'url({{spotify_data["item"]["album"]["images"][0]["url"]}}) no-repeat');
+        $(".square").css('background-size', 'contain')
+    })
+
+    function play_artists(artist1, artist2) {
+        $.get("/artists?artists="+artist1+','+artist2, function (data, status) {
+            window.location.reload(true);
+        });
+    }
+</script>
+{% endblock %}
