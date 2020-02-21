@@ -1,9 +1,12 @@
-from neomodel import RelationshipTo, RelationshipFrom
+from neomodel import RelationshipTo, RelationshipFrom, db
 from neomodel import StructuredNode, StringProperty, BooleanProperty, JSONProperty
 
 from model.graph.spotify import SpotifyNode
 from model.graph.spotify.user import User
 
+from time import time
+
+from model.graph import connection_url
 
 class Playlist(SpotifyNode):
     '''
@@ -45,3 +48,19 @@ class Playlist(SpotifyNode):
         to_connect = {'owner': kwargs.pop('owner')}
         obj = cls(**kwargs)
         return obj, to_connect
+
+    @classmethod
+    def get_tracks(cls, spotify_id):
+        s = time()
+        from model.graph.spotify.track import SmallTrack
+        db.set_connection(connection_url())
+        query = '''
+        MATCH (p: Playlist {spotify_id: "%s"}) <-[r1: `FEATURED IN`]- (t: Track)
+        RETURN t.uri, t.zVector, t.spotify_id, t.name
+        ''' % spotify_id
+        results, meta = db.cypher_query(query)
+        print('Results fetched', time() - s)
+        keys = ['uri', 'zVector', 'spotify_id', 'name']
+        kwargs = [{keys[i]: val for i, val in enumerate(result)} for result in results]
+
+        return [SmallTrack(**result) for result in kwargs]

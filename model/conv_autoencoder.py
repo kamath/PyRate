@@ -1,22 +1,18 @@
-import pandas as pd
 import os
-import numpy as np
-from tqdm import tqdm
-import random
 from datetime import datetime
-
-from sklearn.model_selection import train_test_split
-from scipy import spatial
+from typing import *
 
 import keras
+import numpy as np
+import pandas as pd
 from keras import backend as K
-from keras.layers import Input,Conv2D,MaxPooling2D,UpSampling2D, Conv2DTranspose
-from keras.layers import Conv1D,MaxPool1D,UpSampling1D
-from keras.models import Model
-from keras.optimizers import RMSprop
 from keras import callbacks
-
-from typing import *
+from keras.layers import Conv1D, MaxPool1D, UpSampling1D
+from keras.layers import Input
+from keras.models import Model, load_model
+from scipy import spatial
+from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 '''
 Convolutional Encoder-Decoder network for song recommendations
@@ -80,19 +76,14 @@ class Autoencoder:
         return arrs
 
     def __init__(self, model_name: str, train=True, **kwargs):
-        if train:
+        if train or len(os.listdir('models')) == 0:
             self.autoencoder = self.train(model_name=model_name, **kwargs)
         else:
             self.autoencoder = self.define_model(input_image = Input(shape=kwargs.get('input_shape')))
             self.autoencoder.load_weights(os.path.join('models', model_name))
 
-        self.get_Z_output = K.function([self.autoencoder.get_layer(name='conv1').input],
-                                       [self.autoencoder.get_layer(name='conv3').output])
-        self.get_recreated = K.function([self.autoencoder.get_layer(name='conv4').input],
-                                              [self.autoencoder.get_layer(name='conv6').output])
-
     @classmethod
-    def train(cls, model_name: str, arrs: List[List[List[float]]], to_pad: int,
+    def train(cls, model_name: str, arrs: np.array, weights_path: os.path.join=None,
               random_state=23, test_size=0.2, batch_size = 8, epochs = 100, verbose=True) -> Model:
         '''
         - Converts arrs (raw data as a list of lists of float values) into a numpy array by limiting each sublist
@@ -101,14 +92,39 @@ class Autoencoder:
         - Splits into train/test sets and trains the model
 
         :param arrs: the list of lists of values to train on
-        :param to_pad: length of each list
         :return: the trained model
         '''
 
-        arrs = cls.pad_and_normalize(arrs, to_pad)
         X_train, X_test = train_test_split(arrs,
                                            test_size=test_size,
                                            random_state=random_state)
+
+        input_image = Input(shape=arrs.shape[1:])
+
+        if weights_path:
+            autoencoder = load_model(weights_path)
+
+        else:
+            autoencoder = cls.define_model(input_image)
+
+        autoencoder = cls.online_fit(autoencoder, X_train, model_name, test_size, batch_size, epochs, verbose)
+        return autoencoder
+
+    @staticmethod
+    def online_fit(autoencoder, X_train, model_name, test_size=0.2, batch_size = 8, epochs = 100, verbose=True) \
+            -> Model:
+        '''
+        Fits the model
+
+        :param autoencoder: the autoencoder to fit
+        :param X_train:
+        :param model_name:
+        :param test_size:
+        :param batch_size:
+        :param epochs:
+        :param verbose:
+        :return: the fit model
+        '''
 
         dt = datetime.today()
         currentDate = ''.join([str(dt.year), str(dt.month), str(dt.day)])
@@ -121,14 +137,12 @@ class Autoencoder:
         early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=3, verbose=True)
         history = callbacks.History()
 
-        input_image = Input(shape=arrs.shape[1:])
-        autoencoder = cls.define_model(input_image)
         autoencoder.fit(X_train, X_train, batch_size=batch_size, epochs=epochs,
-                        callbacks=[early_stopping, checkpoint, history], verbose=verbose, validation_split=0.2)
-
+                        callbacks=[early_stopping, checkpoint, history], verbose=verbose, validation_split=test_size)
         return autoencoder
 
-    def store_zVectors(self, arrs: np.array, df: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def store_zVectors(autoencoder: Model, arrs: np.array, df: pd.DataFrame) -> pd.DataFrame:
         '''
         Adds Z-Vectors to a dataframe
 
@@ -136,10 +150,12 @@ class Autoencoder:
         :param df: the associated dataframe
         :return: the dataframe with zVectors in it
         '''
+        get_Z_output = K.function([autoencoder.get_layer(name='conv1').input],
+                                       [autoencoder.get_layer(name='conv3').output])
         zs = []
         print('arrs', arrs.shape)
         for i, arr in enumerate(arrs):
-            zVector = self.get_Z_output([arrs[i:i + 1]])[0]
+            zVector = get_Z_output([arrs[i:i + 1]])[0]
             zs.append(zVector.flatten().reshape(-1, 1))
         df['zVector'] = zs
         return df

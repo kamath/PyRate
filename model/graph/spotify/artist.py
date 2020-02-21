@@ -43,6 +43,7 @@ class Artist(SpotifyNode):
         '''
         db.set_connection(connection_url())
         results, meta = db.cypher_query('''
+        MATCH (t) -[:`FEATURED IN`]-> (p: Playlist)
         MATCH (a: Artist {spotify_id: "%s"}) <-[r1: BY]- 
             (t: Track) -[r2: BY]-> 
             (similar_artists: Artist)
@@ -52,18 +53,20 @@ class Artist(SpotifyNode):
         return set([cls.inflate(artist[0]) for artist in results])
 
     @classmethod
-    def get_tracks_with_multiple_artists(cls, *artist_ids):
+    def get_tracks_with_multiple_artists(cls, context, *artist_ids):
         '''
         Gets tracks with multiple artists on it
 
-        :param artist_ids: the given
+        :param artist_ids: the given artist IDs
+        :param context: the Spotify ID of the playlist
         :return:
         '''
         artists = ','.join(["(a%s:Artist { uri: '%s' })" % (i, a) for i, a in enumerate(artist_ids)])
-        query_constructor = f'''MATCH {artists}, 
+        query_constructor = '''MATCH %s, 
         p = allShortestPaths((a0)-[*]-(a1))
+        WHERE EXISTS((a0) <-[:BY]- (:Track) -[:`FEATURED IN`]-> (:Playlist {spotify_id: "%s"}))
         RETURN nodes(p)
-        '''
+        ''' % (artists, context)
         from model.graph.spotify.track import Track
         db.set_connection(connection_url())
         results, meta = db.cypher_query(query_constructor)

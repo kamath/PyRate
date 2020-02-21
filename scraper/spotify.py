@@ -214,3 +214,16 @@ class Spotify:
         response = requests.put('https://api.spotify.com/v1/me/player/play',
                                 headers={'Authorization': f'Bearer {access_token}'}, data=json.dumps(data))
         return response
+
+    @classmethod
+    def get_images(cls, *uris):
+        '''
+        Gets images for a track given spotify URI
+
+        :param uri: the Spotify URI of the track
+        :return: the resulting JSON
+        '''
+        uris = ','.join(list(map(cls.track_id, uris)))
+        tor = cls()._ping_spotify(f'tracks/?ids={uris}')['tracks']
+        print(tor)
+        return [a['album']['images'] for a in tor]

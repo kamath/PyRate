@@ -27,12 +27,13 @@
     .swag {
         display: inline-block;
         margin-left: 25px;
+        max-width:200px;
+        word-wrap:break-word;
     }
 </style>
 <div class="grey darken-4 grey-text text-lighten-3">
     <div class="container" style="padding-top: 60px; padding-bottom: 60px">
         <h1>Currently Playing:</h1>
-
         <div class="row">
             <div class="col s3 square">
                 <!--                <img src="">-->
@@ -51,12 +52,44 @@
             </div>
         </div>
 
+        <h4 class="wow fadeIn" data-wow-delay="550ms">Most similar songs in this playlist:</h4>
+        <div class="scrolling-wrapper">
+            {% for track in similar_tracks[::-1][:5] %}
+            <div class="swag wow fadeInUp" data-wow-delay="{{loop.index * 100}}ms" align="center">
+                <a href="/play/{{spotify_data['context']['uri']}}/{{track[0][0].uri}}">
+                    <div class="circle"
+                         style="height: 150px; width: 150px;
+                         background: url('{{track[1][0]['url']}}'); background-size: cover"></div>
+                    <br>
+                    <b><h6 style="margin: 0">{{track[0][0].name}}</h6></b>
+                </a>
+            </div>
+            {% endfor %}
+            <br class="clearBoth"/>
+        </div>
+
+        <h4 class="wow fadeIn" data-wow-delay="550ms">Least similar songs in this playlist:</h4>
+        <div class="scrolling-wrapper">
+            {% for track in similar_tracks[:5] %}
+            <div class="swag wow fadeInUp" data-wow-delay="{{loop.index * 100}}ms" align="center">
+                <a href="/play/{{spotify_data['context']['uri']}}/{{track[0][0].uri}}">
+                    <div class="circle"
+                         style="height: 150px; width: 150px;
+                         background: url('{{track[1][0]['url']}}'); background-size: cover"></div>
+                    <br>
+                    <b><h6 style="margin: 0">{{track[0][0].name}}</h6></b>
+                </a>
+            </div>
+            {% endfor %}
+            <br class="clearBoth"/>
+        </div>
+
         <h4 class="wow fadeIn" data-wow-delay="550ms">Artists associated with
             {{spotify_data['item']['artists'][0]['name']}}:</h4>
         <div class="scrolling-wrapper">
             {% for artist in artist_data %}
             <div class="swag wow fadeInUp" data-wow-delay="{{loop.index * 100}}ms" align="center">
-                <a href="/artists?artists={{spotify_data['item']['artists'][0]['uri']}},{{artist.uri}}">
+                <a href="/artists?context_uri={{spotify_data['context']['uri']}}&artists={{spotify_data['item']['artists'][0]['uri']}},{{artist.uri}}">
                     <div class="circle"
                          style="height: 150px; width: 150px;
                          background: url('{{artist['images'][0]['url']}}'); background-size: cover"></div>
@@ -107,7 +140,7 @@
     $(document).ready(function () {
         $(".square").css('height', $(".square").width());
         $(".square").css('background', 'url({{spotify_data["item"]["album"]["images"][0]["url"]}}) no-repeat');
-        $(".square").css('background-size', 'contain')
+        $(".square").css('background-size', 'contain');
     })
 
     function play_artists(artist1, artist2) {
